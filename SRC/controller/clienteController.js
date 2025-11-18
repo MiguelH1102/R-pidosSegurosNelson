@@ -24,7 +24,7 @@ const clienteController = {
         }
 
     },
-    criarCliente: async (req,res)=>{
+    criarCliente: async (req, res)=>{
         try {
             
             const {nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente}= req.body;

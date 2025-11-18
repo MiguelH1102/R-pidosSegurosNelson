@@ -40,7 +40,7 @@ buscarCpf: async (cpfCliente) => {
     try {
         const pool = await getConnection();
 
-        const querySQL = 'SELECT * FROM Clientes WHERE cpfCliente = @cpfCliente;';
+        const querySQL = 'SELECT * FROM CLIENTES WHERE cpfCliente = @cpfCliente;';
 
         const result = await pool.request()
         .input ('cpfCliente', sql.Char(12), cpfCliente)
@@ -58,7 +58,7 @@ inserirCliente: async (nomeCliente, cpfCliente, telefoneCliente, emailCliente, e
 
         const pool = await getConnection();
 
-        let querySQL = 'INSERT INTO Clientes(nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente) VALUES(@nomeCliente, @cpfCliente, @telefoneCliente, @emailCliente, @enderecoCliente)'
+        let querySQL = 'INSERT INTO CLIENTES(nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente) VALUES(@nomeCliente, @cpfCliente, @telefoneCliente, @emailCliente, @enderecoCliente)'
 
         await pool.request()
         .input('nomeCliente', sql.VarChar(100), nomeCliente)
