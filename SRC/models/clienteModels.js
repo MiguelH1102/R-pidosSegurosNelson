@@ -53,6 +53,24 @@ buscarCpf: async (cpfCliente) => {
         res.status(500).json({erro:'Erro no servidor ao verificar o CPF!'});
     }
 },
+buscarEmail: async (emailCliente) => {
+    try {
+        const pool = await getConnection();
+
+        const querySQL = 'SELECT * FROM CLIENTES WHERE emailCliente = @emailCliente;';
+
+        const result = await pool.request()
+        .input ('emailCliente', sql.VarChar(50), emailCliente)
+        .query(querySQL);
+
+        return result.recordset;
+
+    } catch (error) {
+        console.error('Erro ao verificar o email', error);
+        res.status(500).json({erro:'Erro no servidor ao verificar o email!'});
+    }
+},
+
 inserirCliente: async (nomeCliente, cpfCliente, telefoneCliente, emailCliente, enderecoCliente)=>{
     try {
 

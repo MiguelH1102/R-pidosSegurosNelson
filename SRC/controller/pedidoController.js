@@ -44,7 +44,7 @@ const pedidoController ={
             const idPedido = await pedidoModels.inserirPedido(idCliente, dataPedido, tipoEntrega, 
             distanciaKM, pesoCarga, valorBaseKM, valorBaseKg);
 
-            res.status(201).json({ message: "Pedido cadastrado com sucesso!", idPedido });
+            res.status(201).json({ message: "Pedido solicitado com sucesso!", idPedido });
 
         } catch (error) {
             console.error("Erro ao cadastrar pedido:", error);

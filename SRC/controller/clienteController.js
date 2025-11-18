@@ -37,7 +37,12 @@ const clienteController = {
            if(result.length > 0){
             return res.status(409).json({message:`CPF já existe!`});
            }
+           const result1 = await clienteModels.buscarEmail(emailCliente);
+           if(result1.length > 0){
+            return res.status(409).json({message:`Email já existe!`});
+           }
 
+           
           
             
            
