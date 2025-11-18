@@ -93,6 +93,30 @@ res.status(200).json ({mensagem: "Pedido atualizado com sucesso"})
             res.status(500).json({erro: "erro imterno no servidor ao atualizar pedido!"});
         }
     },
+    deletarPedido: async (req, res) => {
+        try {
+            const {idPedido} = req.params;
+
+
+            if (idPedido.length != 36) {
+                return res.status(400).json({erro: "id do pedido invalido"})
+            }
+
+            const pedido = await pedidoModels.buscarUm(idPedido);
+
+            if (!pedido || pedido.length != 1) {
+                return res.status(404).json({erro: "Pedido não encontrado!"})
+            }
+
+            await pedidoModels.deletarPedido(idPedido);
+
+
+            res.status(200).json({message: "Pedido deletado com sucesso!"})
+        } catch (error) {
+            console.error("Erro ao atualizar pedido", error)
+            res.status(500).json({erro: "Erro interno no servidor ao deletar pedido"})
+        }
+    }
 
 } 
 

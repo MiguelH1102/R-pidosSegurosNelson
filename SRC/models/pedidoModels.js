@@ -74,7 +74,7 @@ const pedidoModels = {
             const querySQL = `
             UPDATE PEDIDOS
             SET dataPedido = @dataPedido,
-            idCliente = @idCliente
+            idCliente = @idCliente,
             tipoEntrega = @tipoEntrega,
             distanciaKM = @distanciaKM,
             pesoCarga = @pesoCarga,
@@ -100,6 +100,20 @@ const pedidoModels = {
         }
     },
 
+    deletarPedido: async (idPedido) => {
+        try {
+            const pool = await getConnection();
+    
+            const querySQL = 'DELETE FROM PEDIDOS WHERE idPedido = @idPedido'
+    
+            await pool.request()
+            .input('idPedido', sql.UniqueIdentifier, idPedido)
+            .query(querySQL);
+        } catch (error) {
+            console.error(`Erro ao deletar o pedido`, error);
+            throw error;
+        }
+        }
 
 
 
