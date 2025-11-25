@@ -131,7 +131,7 @@ const pedidoController = {
     
             const pedido = await pedidoModels.buscarUm(idPedido);
     
-            // Correção mínima: caso buscarUm não retorne array
+            
             if (!pedido || !pedido[0]) {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
@@ -140,11 +140,10 @@ const pedidoController = {
                 return res.status(400).json({ erro: "ID do cliente inválido!" });
             }
     
-            // Só consulta cliente se idCliente foi enviado
+            
             if (idCliente) {
                 const cliente = await clienteModels.buscarUm(idCliente);
     
-                // Correção mínima: caso buscarUm não retorne array
                 if (!cliente || !cliente[0]) {
                     return res.status(404).json({ erro: "Cliente não encontrado!" });
                 }
