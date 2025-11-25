@@ -1,5 +1,6 @@
 const {entregaModels} = require("../models/entregaModels");
 
+
 const entregaController = {
     listarEntregas: async (req, res) => {
         try {
@@ -24,7 +25,8 @@ const entregaController = {
             res.status(500).json({messag: `Error ao buscar as entregas`});
         }
     }
-
+    
+    
 }
 
 module.exports = {entregaController}

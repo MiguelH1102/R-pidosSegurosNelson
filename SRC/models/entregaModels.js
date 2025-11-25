@@ -39,8 +39,23 @@ buscarTodos: async () => {
             throw error;
         }
 
+    },
+    cancelarEntrega: async (idEntrega) => {
+        try {
+            const pool = await getConnection();
+    
+    
+            const querySQL = 'DELETE FROM ENTREGAS WHERE idEntrega = @idEntrega'
+    
+    
+            await pool.request()
+            .input('idEntrega', sql.UniqueIdentifier, idEntrega)
+            .query(querySQL);
+        } catch (error) {
+            console.error("Erro ao cancelar entrega, error");
+            throw error;
+        }
     }
-
 
 }
 module.exports = {entregaModels}

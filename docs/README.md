@@ -88,7 +88,7 @@
 #### PUT /pedidos/:idPedido
 - **Descrição**: Atualizar um pedido solicitado
 - **Body**:
-´´
+´´´
 {
 	"idCliente": "idExemplo",
 	"dataPedido": 0000-00-00,
@@ -105,3 +105,11 @@
     "message": "Pedido atualizado com sucesso!"
 }
 ```
+
+### ENTREGAS
+
+#### GET /entregas
+- **Descrição**: Obtem uma lista das entregas solicitadas
+- **Responde**: Arry de entregas
+
+
