@@ -312,4 +312,4 @@ const pedidoModels = {
 
 
 }
-module.exports = {pedidoModels}
+module.exports = {pedidoModels} // Exporta o models

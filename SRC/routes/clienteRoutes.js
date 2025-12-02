@@ -16,4 +16,4 @@ router.put("/clientes/:idCliente", clienteController.atualizarCliente)
 
 
 
-module.exports = {clienteRoutes: router}
+module.exports = {clienteRoutes: router} // Exporta o routes

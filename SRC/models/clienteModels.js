@@ -168,4 +168,4 @@ const clienteModels = {
 
 
 }
-module.exports = {clienteModels};
+module.exports = {clienteModels}; // Exporta o models

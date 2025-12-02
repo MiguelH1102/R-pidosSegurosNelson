@@ -59,4 +59,4 @@ buscarTodos: async () => {
     },
 
 }
-module.exports = {entregaModels}
+module.exports = {entregaModels} // Exporta o models

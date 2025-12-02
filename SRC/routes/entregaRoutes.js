@@ -6,4 +6,4 @@ const {entregaController} = require("../controller/entregaController")
 router.get("/entregas", entregaController.listarEntregas)
 
 
-module.exports = {entregaRoutes: router}
+module.exports = {entregaRoutes: router}  // Exporta o routes

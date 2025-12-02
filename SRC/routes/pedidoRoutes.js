@@ -14,4 +14,4 @@ router.put("/pedidos/:idPedido", pedidoController.atualizarPedido);
 //metodo DELETE (deletar Pedido)
 router.delete("/pedidos/:idPedido", pedidoController.deletarPedido);
 
-module.exports = {pedidoRoutes: router}
+module.exports = {pedidoRoutes: router}  // Exporta o routes
