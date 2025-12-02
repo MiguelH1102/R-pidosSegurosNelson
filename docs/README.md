@@ -9,7 +9,7 @@
 #### POST /clientes
 - **Descrição**: Cadastrar um novo cliente
 - **Body**:
-´´´
+```
 {
 	"nomeCliente": "nomeExemplo",
 	"cpfCliente": "cpfExemplo",
@@ -17,7 +17,7 @@
 	"emailCliente": "emailExemplo",
 "enderecoCliente": "enderecoExemplo"
 }
-´´´
+```
 
 - **Responder**:
 ```

@@ -35,7 +35,7 @@ const pedidoModels = {
             const querySQL = `
             SELECT*
             FROM PEDIDOS
-            INNER JOIN CLIENTES ON CLIENTES.idCliente = PEDIDOS.idCliente
+            
             `
 
             const result = await pool.request()
@@ -167,7 +167,6 @@ const pedidoModels = {
     //Atualiza o pedido pelo metodo PUT casso exista 
     atualizarPedido: async (
         idPedido,
-        idEntrega,
         idCliente,
         dataPedido,
         tipoEntrega,
@@ -183,15 +182,10 @@ const pedidoModels = {
         valorFinal,
         statusEntrega
     ) => {
-    
-        const pool = await getConnection(); // inicia a transcrição
-        const transaction = new sql.Transaction(pool);
-    
-        await transaction.begin();
-    
         try {
+            const pool = await getConnection();
     
-           
+            // Atualiza PEDIDOS
             const queryPedido = `
                 UPDATE PEDIDOS
                 SET
@@ -204,22 +198,22 @@ const pedidoModels = {
                     valorBaseKg = @valorBaseKg
                 WHERE idPedido = @idPedido;
             `;
+            await pool.request()
+            .input("idPedido", sql.UniqueIdentifier, idPedido)
+            .input("idCliente", sql.UniqueIdentifier, idCliente)
+            .input("dataPedido", sql.Date, dataPedido)
+            .input("tipoEntrega", sql.VarChar(7), tipoEntrega)
+            .input("distanciaKM", sql.Decimal(10, 2), distanciaKM)
+            .input("pesoCarga", sql.Decimal(10, 2), pesoCarga ?? pedidoAtual.pesoCarga)
+            .input("valorBaseKM", sql.Decimal(10, 2), valorBaseKM)
+            .input("valorBaseKg", sql.Decimal(10, 2), valorBaseKg)
+            .query(queryPedido); // Executa a query de atualização do pedido
     
-            await transaction.request()
-                .input("idPedido", sql.UniqueIdentifier, idPedido)
-                .input("idCliente", sql.UniqueIdentifier, idCliente)
-                .input("dataPedido", sql.Date, dataPedido)
-                .input("tipoEntrega", sql.VarChar(7), tipoEntrega)
-                .input("distanciaKM", sql.Decimal(10, 2), distanciaKM)
-                .input("pesoCarga", sql.Decimal(10, 2), pesoCarga)
-                .input("valorBaseKM", sql.Decimal(10, 2), valorBaseKM)
-                .input("valorBaseKg", sql.Decimal(10, 2), valorBaseKg)
-                .query(queryPedido); // Executa a query de atualização do pedido
-    
-    
-            
+            // Atualiza ENTREGAS
             const queryEntrega = `
                 UPDATE ENTREGAS
+                SET
+                   UPDATE ENTREGAS
                 SET
                     valorDistancia = @valorDistancia,
                     valorPeso = @valorPeso,
@@ -228,33 +222,22 @@ const pedidoModels = {
                     taxaEntrega = @taxaEntrega,
                     valorFinal = @valorFinal,
                     statusEntrega = @statusEntrega
-                WHERE idEntrega = @idEntrega;
+                WHERE idPedido = @idPedido;
             `;
-    
-            await transaction.request()
-                .input("idEntrega", sql.UniqueIdentifier, idEntrega)
-                .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
-                .input("valorPeso", sql.Decimal(10, 2), valorPeso)
-                .input("acreEntrega", sql.Decimal(10, 2), acreEntrega)
-                .input("descEntrega", sql.Decimal(10, 2), descEntrega)
-                .input("taxaEntrega", sql.Decimal(10, 2), taxaEntrega)
-                .input("valorFinal", sql.Decimal(10, 2), valorFinal)
-                .input("statusEntrega", sql.VarChar(11), statusEntrega)
-                .query(queryEntrega); // Executa a query de atualização da entrega
-    
-    
-            
-            await transaction.commit();
-    
-            return {
-                mensagem: "Pedido e entrega atualizados com sucesso",
-                idPedido,  // retorna o id do pedido atualizado 
-                idEntrega // Inicia transação
-            };
+            await pool.request()
+            .input("idPedido", sql.UniqueIdentifier, idPedido)
+            .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
+            .input("valorPeso", sql.Decimal(10, 2), valorPeso)
+            .input("acreEntrega", sql.Decimal(10, 2), acreEntrega)
+            .input("descEntrega", sql.Decimal(10, 2), descEntrega)
+            .input("taxaEntrega", sql.Decimal(10, 2), taxaEntrega)
+            .input("valorFinal", sql.Decimal(10, 2), valorFinal)
+            .input("statusEntrega", sql.VarChar(11), statusEntrega)
+            .query(queryEntrega); // Executa a query de atualização da entrega
+
     
         } catch (error) {
-            await transaction.rollback();
-            console.error("Erro ao atualizar pedido:", error);
+            console.error("Erro ao atualizar pedido", error);
             throw error;
         }
     },
@@ -280,7 +263,6 @@ const pedidoModels = {
 
             const idEntrega = resultadoEntrega.recordset[0].idEntrega;
 
-            // Deleta a entrega
             querySQL = `
                 DELETE FROM ENTREGAS
                 WHERE idEntrega = @idEntrega
@@ -290,7 +272,6 @@ const pedidoModels = {
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .query(querySQL);
 
-            // Deleta o pedido
             querySQL = `
                 DELETE FROM PEDIDOS
                 WHERE idPedido = @idPedido
@@ -300,14 +281,14 @@ const pedidoModels = {
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .query(querySQL);
 
-            await transaction.commit();  // Confirma as exclusões
+            await transaction.commit();
 
         } catch (error) {
-            await transaction.rollback(); // Reverte alterações em caso de erro
+            await transaction.rollback();
             console.error("Erro ao deletar Pedido:", error);
             throw error;
         }
-    },
+    }
 
 
 
