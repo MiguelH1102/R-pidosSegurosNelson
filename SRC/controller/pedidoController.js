@@ -1,17 +1,31 @@
 const { pedidoModels } = require("../models/pedidoModels");
 const { clienteModels } = require("../models/clienteModels");
 
+/**
+     * Controlador que lista todos os pedidos do Banco de Dados
+     * 
+     * @async
+     * @function listarPedidos
+     * @param {object} req -Objeto da requisição (recebido do cliente HTTP);
+     * @param {object} res -Objeto da resposta (enviado ao cliente HTTP);
+     * @returns {Promise<void>} Retorna uma respostas JSON com A lista de pedidos.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao buscar os pedidos.
+     */
+
 const pedidoController = {
+
+      // Listar todos os pedidos
     listarPedidos: async (req, res) => {
         try {
-            const pedidos = await pedidoModels.buscarTodos();
-            res.status(200).json(pedidos);
+            const pedidos = await pedidoModels.buscarTodos(); // Busca todos os pedidos
+            res.status(200).json(pedidos); // Retorna lista de pedidos
         } catch (error) {
             console.error("Erro ao listar pedidos:", error);
             res.status(500).json({ erro: "Erro interno no servidor ao listar pedidos!" });
         }
     },
 
+     // Criar um novo pedido
     criarPedido: async (req, res) => {
         try {
             const {
@@ -23,30 +37,34 @@ const pedidoController = {
                 valorBaseKM,
                 valorBaseKg,
                 statusEntrega
-            } = req.body;
+            } = req.body;  // Recebe dados do pedido do body
 
             
+            // Validação de campos obrigatórios
             if (!idCliente || !dataPedido || !tipoEntrega ||
-                distanciaKM == undefined || pesoCarga == undefined ||
-                valorBaseKM == undefined || valorBaseKg == undefined) {
+                distanciaKM === undefined || pesoCarga === undefined ||
+                valorBaseKM === undefined || valorBaseKg === undefined) {
                 return res.status(400).json({ erro: "Campos obrigatórios não preenchidos!" });
             }
 
+             // Validação do ID do cliente
             if (idCliente.length !== 36) {
                 return res.status(400).json({ erro: "Id do Cliente inválido!" });
             }
 
+             // Validação da data do pedido
             const data = new Date(dataPedido);
             if (isNaN(data.getTime())) {
                 return res.status(400).json({ erro: "Data do pedido inválida!" });
             }
 
+            // Verifica se o cliente existe
             const cliente = await clienteModels.buscarUm(idCliente);
             if (!cliente || cliente.length !== 1) {
                 return res.status(404).json({ erro: "Cliente não encontrado!" });
             }
 
-            
+            // Calcula valores base do pedido
             let valorDistancia = distanciaKM * valorBaseKM;
             let valorPeso = pesoCarga * valorBaseKg;
             let valorFinal = valorPeso + valorDistancia;
@@ -55,34 +73,36 @@ const pedidoController = {
             let descontoEntrega = 0;
             let taxaEntregaFinal = 0;
 
-
+             // Calcula acréscimo para entrega urgente
             if (tipoEntrega.toLowerCase() === "urgente") {
                 acrescimoEntrega = valorFinal * 0.2;
                 valorFinal += acrescimoEntrega;
             }
 
-            
+            // Aplica desconto se valor final > 500
             if (valorFinal > 500) {
                 descontoEntrega = valorFinal * 0.1;
                 valorFinal -= descontoEntrega;
             }
 
-            
+            // Aplica taxa extra se peso > 50
             if (pesoCarga > 50) {
                 taxaEntregaFinal = 15;
                 valorFinal += taxaEntregaFinal;
             }
 
+             // Valida e define status da entrega
             let statusEntregaDefault = "calculado";
             if (statusEntrega) {
-                if (statusEntrega.toLowerCase() != "calculado" && statusEntrega.toLowerCase() != "em transito" && statusEntrega.toLowerCase() != "cancelado" && statusEntrega.toLowerCase() != "entregue") {
+                const statusLower = statusEntrega.toLowerCase();
+                if (statusLower !== "calculado" && statusLower !== "em transito" && statusLower !== "cancelado" && statusLower !== "entregue") {
                     return res.status(400).json({erro: "Status da entrega do pedido inválido!"});
                 }
 
                 statusEntregaDefault = statusEntrega;
             }
 
-            
+            // Cria o pedido no banco
             const idPedido = await pedidoModels.criarPedido(
                 idCliente,
                 dataPedido,
@@ -111,9 +131,10 @@ const pedidoController = {
         }
     },
 
+    // Atualizar um pedido existente
     atualizarPedido: async (req, res) => {
         try {
-            const { idPedido } = req.params;
+            const { idPedido } = req.params; // Pega ID do pedido da URL
             const {
                 idCliente,
                 dataPedido,
@@ -123,60 +144,38 @@ const pedidoController = {
                 valorBaseKM,
                 valorBaseKg,
                 statusEntrega
-            } = req.body;
-    
+            } = req.body; // Recebe dados do body
+
+
+             // Valida ID do pedido
             if (!idPedido || idPedido.length !== 36) {
                 return res.status(400).json({ erro: "ID do pedido inválido!" });
             }
-    
-            const pedido = await pedidoModels.buscarUm(idPedido);
-    
-            
+
+            const pedido = await pedidoModels.buscarUm(idPedido);  // Busca o pedido
+
+
             if (!pedido || !pedido[0]) {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
-    
+
             if (idCliente && idCliente.length !== 36) {
                 return res.status(400).json({ erro: "ID do cliente inválido!" });
             }
-    
-            
+
+            // Valida ID do cliente se fornecido
             if (idCliente) {
                 const cliente = await clienteModels.buscarUm(idCliente);
-    
+
                 if (!cliente || !cliente[0]) {
                     return res.status(404).json({ erro: "Cliente não encontrado!" });
                 }
             }
-    
-            let valorDistancia = distanciaKM * valorBaseKM;
-            let valorPeso = pesoCarga * valorBaseKg;
-            let valorFinal = valorPeso + valorDistancia;
-    
-            let acrescimoEntrega = 0;
-            let descontoEntrega = 0;
-            let taxaEntregaFinal = 0;
-    
-            if (tipoEntrega && tipoEntrega.toLowerCase() === "urgente") {
-                acrescimoEntrega = valorFinal * 0.2;
-                valorFinal += acrescimoEntrega;
-            }
-    
-            if (valorFinal > 500) {
-                descontoEntrega = valorFinal * 0.1;
-                valorFinal -= descontoEntrega;
-            }
-    
-            if (pesoCarga > 50) {
-                taxaEntregaFinal = 15;
-                valorFinal += taxaEntregaFinal;
-            }
-    
-            let statusEntregaDefault = "calculado";
-    
+
+            // Verifica se o cliente existe
             if (statusEntrega) {
                 const statusLower = statusEntrega.toLowerCase();
-    
+
                 if (
                     statusLower !== "calculado" &&
                     statusLower !== "em transito" &&
@@ -185,12 +184,11 @@ const pedidoController = {
                 ) {
                     return res.status(400).json({ erro: "Status da entrega do pedido inválido!" });
                 }
-    
-                statusEntregaDefault = statusEntrega;
             }
-    
-            const atual = pedido[0];
-    
+
+            const atual = pedido[0];  // Dados atuais do pedido
+
+           // Define valores atualizados ou mantém os antigos
             const idClienteAtualizado = idCliente ?? atual.idCliente;
             const dataPedidoAtualizado = dataPedido ?? atual.dataPedido;
             const tipoEntregaPedidoAtualizado = tipoEntrega ?? atual.tipoEntrega;
@@ -198,16 +196,38 @@ const pedidoController = {
             const pesoPedidoAtualizado = pesoCarga ?? atual.pesoCarga;
             const valorBaseKMPedidoAtualizado = valorBaseKM ?? atual.valorBaseKM;
             const valorBaseKgPedidoAtualizado = valorBaseKg ?? atual.valorBaseKg;
-            const valorDistanciaEntregaAtualizado = valorDistancia ?? atual.valorDistancia;
-            const valorPesoEntregaAtualizado = valorPeso ?? atual.valorPeso;
-            const valorFinalEntregaAtualizado = valorFinal ?? atual.valorFinal;
-            const acrescimoEntregaAtualizado = acrescimoEntrega ?? atual.acreEntrega;
-            const descontoEntregaAtualizado = descontoEntrega ?? atual.descEntrega;
-            const taxaExtraEntregaAtualizado = taxaEntregaFinal ?? atual.taxaEntrega;
             const statusEntregaAtualizado = statusEntrega ?? atual.statusEntrega;
-    
+
+            // Recalcula valores do pedido
+            let valorDistancia = distanciaPedidoAtualizado * valorBaseKMPedidoAtualizado;
+            let valorPeso = pesoPedidoAtualizado * valorBaseKgPedidoAtualizado;
+            let valorFinal = valorPeso + valorDistancia;
+
+            let acrescimoEntrega = 0;
+            if (tipoEntregaPedidoAtualizado.toLowerCase() === "urgente") {
+                acrescimoEntrega = valorFinal * 0.2;
+                valorFinal += acrescimoEntrega;
+            }
+
+            let descontoEntrega = 0;
+            if (valorFinal > 500) {
+                descontoEntrega = valorFinal * 0.1;
+                valorFinal -= descontoEntrega;
+            }
+
+            let taxaEntregaFinal = 0;
+            if (pesoPedidoAtualizado > 50) {
+                taxaEntregaFinal = 15;
+                valorFinal += taxaEntregaFinal;
+            }
+
+            
+            const idEntrega = atual.idEntrega; // Pega ID da entrega associada
+
+             // Atualiza pedido e entrega no banco
             await pedidoModels.atualizarPedido(
                 idPedido,
+                idEntrega,
                 idClienteAtualizado,
                 dataPedidoAtualizado,
                 tipoEntregaPedidoAtualizado,
@@ -215,38 +235,45 @@ const pedidoController = {
                 pesoPedidoAtualizado,
                 valorBaseKMPedidoAtualizado,
                 valorBaseKgPedidoAtualizado,
-                valorDistanciaEntregaAtualizado,
-                valorPesoEntregaAtualizado,
-                valorFinalEntregaAtualizado,
-                acrescimoEntregaAtualizado,
-                descontoEntregaAtualizado,
-                taxaExtraEntregaAtualizado,
+                valorDistancia,
+                valorPeso,
+                acrescimoEntrega,
+                descontoEntrega,
+                taxaEntregaFinal,
+                valorFinal,
                 statusEntregaAtualizado
             );
-    
-            res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" });
-    
+
+            res.status(201).json({
+                message: "Pedido atualizado com sucesso!",
+                idPedido,
+                idEntrega
+            });
+
         } catch (error) {
             console.error("Erro ao atualizar pedido:", error);
             res.status(500).json({ erro: "Erro interno no servidor ao atualizar pedido!" });
         }
     },
 
+    // Deletar um pedido
     deletarPedido: async (req, res) => {
         try {
-            const { idPedido } = req.params;
+            const { idPedido } = req.params;  // Pega ID do pedido da URL
 
+
+            // Valida ID do pedido
             if (!idPedido || idPedido.length !== 36) {
                 return res.status(400).json({ erro: "ID do pedido inválido!" });
             }
 
-            const pedido = await pedidoModels.buscarUm(idPedido);
+            const pedido = await pedidoModels.buscarUm(idPedido); // Busca o pedido
     
             if (!pedido || pedido.length !== 1) {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
 
-            await pedidoModels.deletarPedido(idPedido);
+            await pedidoModels.deletarPedido(idPedido); // Deleta pedido e entrega
     
             return res.status(200).json({ mensagem: "Pedido e entrega deletados com sucesso!" });
     
@@ -257,4 +284,4 @@ const pedidoController = {
     }
 }
 
-module.exports = { pedidoController };
+module.exports = { pedidoController }; // Exporta o controller

@@ -41,7 +41,7 @@ collection:
         meta:
           id: req_2bb5ce480fc74ec1b0ca89ce9b672899
           created: 1762876734484
-          modified: 1764089209302
+          modified: 1764689748956
           isPrivate: false
           description: ""
           sortKey: -1762876734484
@@ -50,12 +50,12 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"nomeCliente": "Isa Lopes",
-            	"cpfCliente": "12345167182",
-            	"telefoneCliente": "55555555555",
-            	"emailCliente": "tahu@gmail.com",
-            "enderecoCliente": "SP, cidade Matheus numero 455"
-            	}
+            	"nomeCliente": "Teste",
+            	"cpfCliente": "1234681901",
+            	"telefoneCliente": "52617281234",
+            	"emailCliente": "tadeu4@gmail.com",
+            	"enderecoCliente": "SP, cidade Sumaré numero 570"
+            }
         headers:
           - name: Content-Type
             value: application/json
@@ -69,12 +69,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/clientes/9539C37F-A7FF-43A1-BBA0-A573E3F6815A
+      - url: localhost:8081/clientes/11F43C9A-A001-4FC7-B448-B9B7703D9727
         name: Deletar
         meta:
           id: req_f1601be6433344f3b03c5732852e8dbb
           created: 1762884035021
-          modified: 1762887975902
+          modified: 1764689062954
           isPrivate: false
           description: ""
           sortKey: -1762884035021
@@ -145,7 +145,7 @@ collection:
         meta:
           id: req_fcaab1a3f9a2418b80f76ac1031d2308
           created: 1763463418260
-          modified: 1764096069054
+          modified: 1764690115715
           isPrivate: false
           description: ""
           sortKey: -1763463418260
@@ -154,11 +154,11 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"idCliente": "ABE65D91-2DA2-4DB9-8940-7208967D4E4E",
-            	"dataPedido": "2025-08-18",
+            	"idCliente": "BDAA2F40-06A3-4F34-BAA1-E7C9D0567E3F",
+            	"dataPedido": "2025-12-27",
             	"tipoEntrega": "normal",
-            	"distanciaKM": 130,
-            	"pesoCarga": 10,
+            	"distanciaKM": 100,
+            	"pesoCarga": 20,
             	"valorBaseKM": 5.00,
             	"valorBaseKg": 2.00
             	
@@ -198,12 +198,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/pedidos/70F67C1E-8747-44D0-99B6-07ABFC44D89B
+      - url: localhost:8081/pedidos/2652755D-B998-4416-A9A2-DCEFC79CD7C4
         name: Atualizar
         meta:
           id: req_19c1b74d140f4594b87adb077b02da5e
           created: 1763463862753
-          modified: 1764096478528
+          modified: 1764690423197
           isPrivate: false
           description: ""
           sortKey: -1763463862753
@@ -212,11 +212,11 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"idCliente": "ABE65D91-2DA2-4DB9-8940-7208967D4E4E",
-            	"dataPedido": "2025-09-28T00:00:00.000Z",
+            	"idCliente": "BDAA2F40-06A3-4F34-BAA1-E7C9D0567E3F",
+            	"dataPedido": "2025-12-16T00:00:00.000Z",
             		"tipoEntrega": "urgente",
-            		"distanciaKM": 500,
-            		"pesoCarga": 55,
+            		"distanciaKM": 150,
+            		"pesoCarga": 10,
             		"valorBaseKM": 2.00,
             		"valorBaseKg": 5.00
             	
@@ -234,12 +234,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/pedidos/70F67C1E-8747-44D0-99B6-07ABFC44D89B
+      - url: localhost:8081/pedidos/B83DEF2C-2601-45D6-9A5B-C7952B385F0E
         name: Deletar
         meta:
           id: req_0d1154db3fbf4a10a7923d49d8116379
           created: 1763463879460
-          modified: 1764097933031
+          modified: 1764688624282
           isPrivate: false
           description: ""
           sortKey: -1763463879460

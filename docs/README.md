@@ -56,7 +56,7 @@
 - **Responde**: Arry de pedidos
 
 #### POST /pedidos
-- **Descrição**: Cadastrar um novo pedido
+- **Descrição**: Cadastrar um novo pedido e solicitar uma entrega 
 - **Body**:
 ´´´
 {
@@ -72,21 +72,25 @@
  **Responde**:
 ```
 {
-    "message": "Pedido solicitado com sucesso!"
+    "message": "Pedido solicitado com sucesso!",
+	"idPedido": {
+		"idPedido": "idExemplo",
+		"idEntrega": "idExemplo"
+	}
 }
 ```
 
 #### DELETE /pedidos/:idPedido
-- **Descrição**: Deletar um pedido solicitado
+- **Descrição**: Deletar um pedido solicitado e deletar uma entraga solicitada
 - **Responde**:
 ```
 {
-    "message": "Pedido deletado com sucesso!"
+    "message": "Pedido e entrega deletado com sucesso!"
 }
 ```
 
 #### PUT /pedidos/:idPedido
-- **Descrição**: Atualizar um pedido solicitado
+- **Descrição**: Atualizar um pedido solicitado e atualizar uma entrega solicitada
 - **Body**:
 ´´´
 {
@@ -97,6 +101,7 @@
 	"pesoCarga": "pesoExemplo",
 	"valorBaseKM": 0.00,
 	"valorBaseKg": 0.00
+	"statusEntrega": "statusExemplo"
 }
 ´´´
  **Responde**:

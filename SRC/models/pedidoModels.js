@@ -1,6 +1,33 @@
 const {sql, getConnection} = require("../config/db")
 
+    /**
+     * Busca todos os pedidos e seus repectivos itens no Banco de Dados.
+     * 
+     * @async
+     *
+     *  @function buscarTodos 
+     * @returns {Promise<Array>} Retorna uma lista com todos os pedidos e tipos de entregas.
+     * 
+     * @function buscarUm
+     * @returns {Promise<Array>} Retorna uma lista com um os pedido seu respctivo tipo de entrega.
+     *
+     * @function criarPedido
+     * @returns {Promise<Array>} Cria um pedido com os dados (idCliente, dataPedido, tipoEntrega, distanciaKM, pesoCarga, valorBaseKM,valorBaseKg, valorDistancia, valorPeso, acreEntrega, descEntrega, taxaEntrega, valorFinal,
+        statusEntrega)
+     * 
+        @function buscarPorCliente
+     * @returns {Promise<Array>} semelhante a um buscar Um busca um cliente ja cadastrado pelo seus dados.
+     * 
+     * @function atualizarPedido
+     * @returns {Promise<Array>} Atualiza os pedidos e todos suas informações.
+     * 
+     * @function deletarPedido
+     * @returns {Promise<Array>} Deleta/Cancela o pedido e suas infomações.
+     * @throws Mostra no console o erro e propaga o erro caso a busca falha.
+     */
+
 const pedidoModels = {
+     // Buscar todos os pedidos atravez do metodo GET 
     buscarTodos: async () => {
         try {
             const pool = await getConnection();
@@ -16,12 +43,13 @@ const pedidoModels = {
 
                 return result.recordset
 
-        } catch (error) {
+        } catch (error) { //converte o erro para controller tratar
             console.error("Erro ao buscar pedido", error);
             throw error;
         }
     },
 
+    //Busca um pedido pelo ID(36 digitos) caso ele exista 
     buscarUm: async (idPedido) => {
         try {
             const pool = await getConnection();
@@ -33,11 +61,30 @@ const pedidoModels = {
                 .query(querySQL);
 
                 return result.recordset;
-        } catch (error) {
+        } catch (error) { // converte o erro para o controller tratar
             console.error("Erro ao buscar o pedido", error);
             throw error;
         }
     },
+
+     //meto GET semelhante ao buscarUm busca 1 cliente ja cadastrado
+    buscarPorCliente: async (idCliente) => {
+        const pool = await getConnection();
+    
+        const query = `
+            SELECT *
+            FROM PEDIDOS
+            WHERE idCliente = @idCliente
+        `;
+    
+        const result = await pool.request()
+            .input('idCliente', sql.UniqueIdentifier, idCliente)
+            .query(query);
+    
+        return result.recordset;
+    },
+
+     // criar um pedido pelo metodo POST atravez desses dados se relacionando com Entrega
     criarPedido: async (idCliente, dataPedido, tipoEntrega, distanciaKM, pesoCarga, valorBaseKM,valorBaseKg, valorDistancia, valorPeso, acreEntrega, descEntrega, taxaEntrega, valorFinal,
     statusEntrega
     ) => {
@@ -50,7 +97,7 @@ const pedidoModels = {
     
             
             
-            const queryPedido = `
+            const querySQL = `
                 INSERT INTO PEDIDOS (
                     idCliente, dataPedido, tipoEntrega,
                     distanciaKM, pesoCarga, valorBaseKM, valorBaseKg
@@ -61,7 +108,8 @@ const pedidoModels = {
                     @distanciaKM, @pesoCarga, @valorBaseKM, @valorBaseKg
                 )
             `;
-    
+
+            // Dados SQL de cada elemento
             const resultPedido = await transaction.request()
                 .input("idCliente", sql.UniqueIdentifier, idCliente)
                 .input("dataPedido", sql.Date, dataPedido)
@@ -70,13 +118,13 @@ const pedidoModels = {
                 .input("pesoCarga", sql.Decimal(10, 2), pesoCarga)
                 .input("valorBaseKM", sql.Decimal(10, 2), valorBaseKM)
                 .input("valorBaseKg", sql.Decimal(10, 2), valorBaseKg)
-                .query(queryPedido);
+                .query(querySQL);
     
             const idPedido = resultPedido.recordset[0].idPedido;
     
     
             
-            const queryEntrega = `
+            const querySQLe = `
                 INSERT INTO ENTREGAS (
                     idPedido, valorDistancia, valorPeso,
                     acreEntrega, descEntrega, taxaEntrega,
@@ -90,6 +138,7 @@ const pedidoModels = {
                 )
             `;
     
+            // dados SQL da entrega ligado ao pedido
             const resultEntrega = await transaction.request()
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
@@ -99,12 +148,12 @@ const pedidoModels = {
                 .input("taxaEntrega", sql.Decimal(10, 2), taxaEntrega)
                 .input("valorFinal", sql.Decimal(10, 2), valorFinal)
                 .input("statusEntrega", sql.VarChar(11), statusEntrega)
-                .query(queryEntrega);
+                .query(querySQLe);
     
             await transaction.commit();
     
             return {
-                idPedido,
+                idPedido, //retorna o ID do pedido relacionado com o idEntrega
                 idEntrega: resultEntrega.recordset[0].idEntrega
             };
     
@@ -114,6 +163,8 @@ const pedidoModels = {
             throw error;
         }
     },
+
+    //Atualiza o pedido pelo metodo PUT casso exista 
     atualizarPedido: async (
         idPedido,
         idEntrega,
@@ -133,7 +184,7 @@ const pedidoModels = {
         statusEntrega
     ) => {
     
-        const pool = await getConnection();
+        const pool = await getConnection(); // inicia a transcrição
         const transaction = new sql.Transaction(pool);
     
         await transaction.begin();
@@ -163,7 +214,7 @@ const pedidoModels = {
                 .input("pesoCarga", sql.Decimal(10, 2), pesoCarga)
                 .input("valorBaseKM", sql.Decimal(10, 2), valorBaseKM)
                 .input("valorBaseKg", sql.Decimal(10, 2), valorBaseKg)
-                .query(queryPedido);
+                .query(queryPedido); // Executa a query de atualização do pedido
     
     
             
@@ -189,16 +240,16 @@ const pedidoModels = {
                 .input("taxaEntrega", sql.Decimal(10, 2), taxaEntrega)
                 .input("valorFinal", sql.Decimal(10, 2), valorFinal)
                 .input("statusEntrega", sql.VarChar(11), statusEntrega)
-                .query(queryEntrega);
+                .query(queryEntrega); // Executa a query de atualização da entrega
     
     
-            // Commit
+            
             await transaction.commit();
     
             return {
                 mensagem: "Pedido e entrega atualizados com sucesso",
-                idPedido,
-                idEntrega
+                idPedido,  // retorna o id do pedido atualizado 
+                idEntrega // Inicia transação
             };
     
         } catch (error) {
@@ -208,6 +259,7 @@ const pedidoModels = {
         }
     },
 
+    // Deleta um pedido e sua entrega correspondente
     deletarPedido: async (idPedido) => {
 
         const pool = await getConnection();
@@ -228,6 +280,7 @@ const pedidoModels = {
 
             const idEntrega = resultadoEntrega.recordset[0].idEntrega;
 
+            // Deleta a entrega
             querySQL = `
                 DELETE FROM ENTREGAS
                 WHERE idEntrega = @idEntrega
@@ -237,6 +290,7 @@ const pedidoModels = {
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .query(querySQL);
 
+            // Deleta o pedido
             querySQL = `
                 DELETE FROM PEDIDOS
                 WHERE idPedido = @idPedido
@@ -246,10 +300,10 @@ const pedidoModels = {
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .query(querySQL);
 
-            await transaction.commit();
+            await transaction.commit();  // Confirma as exclusões
 
         } catch (error) {
-            await transaction.rollback();
+            await transaction.rollback(); // Reverte alterações em caso de erro
             console.error("Erro ao deletar Pedido:", error);
             throw error;
         }
