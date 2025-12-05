@@ -4,13 +4,40 @@ const {sql, getConnection } = require("../config/db");
      * Controlador que lista os clientes do banco de dados 
      * 
      * @async
-     * @function listar clietes
+     * 
+     * @function buscarTodos
+     * @returns {Promise<void>} Retorna uma respostas JSON com A lista de todos os clientes.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao buscar os clientes.
+     * 
+     * 
+     * @function buscarUm 
+     * @returns {Promise<void>} Retorna uma resposta JSON com um cliente pelo ID.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao buscar o clientes.
+     * 
+     * @function buscarCpf
+     * @returns {Promise<void>} Retorna uma resposta JSON com um cliente pelo CPF.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao buscar o clientes pelo CPF.
+     * 
+     * @function buscarEmail
+     * @returns {Promise<void>} Retorna uma resposta JSON com um cliente pelo Email.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao buscar o clientes pelo email.
+     * 
+     * @function inserirCliente
+     * @returns {Promise<void>} Retorna uma resposta JSON 200 com o cliente inserido.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao inserir Cliente.
+     * 
+     * @function deletarCliente
+     * @returns {Promise<void>} Retorna uma resposta JSON com 201 (cliente deletado com sucesso).
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao deletar cliente.
+     * 
+     * @function atualizarCliente
+     * @returns {Promise<void>} Retorna uma resposta JSON com o cliente atualizado.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao atuaçizar cliente.
+     * 
      * @param {object} req -Objeto da requisição (recebido do cliente HTTP);
      * @param {object} res -Objeto da resposta (enviado ao cliente HTTP);
-     * @returns {Promise<void>} Retorna uma respostas JSON com A lista de clientes.
-     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao buscar os clientes.
-     */
 
+     */
 const clienteModels = {
 
     // Buscar todos os clientes
@@ -18,7 +45,7 @@ const clienteModels = {
         try {
             const pool = await getConnection(); // Conecta ao banco de dados
 
-            let sql = 'SELECT * FROM CLIENTES'           
+            let sql = `SELECT * FROM CLIENTES`           
 
             const result = await pool.request().query(sql);  // Executa a query
 

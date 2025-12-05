@@ -20,7 +20,16 @@ buscarTodos: async () => {
             const pool = await getConnection();
 
             // Comando SQL para trazer todas as entrega
-            let sql = 'SELECT * FROM ENTREGAS'         
+            let sql = `SELECT   
+                        idEntrega,
+                        valorDistancia,
+                        valorPeso,
+                        acreEntrega,
+                        descEntrega,
+                        taxaEntrega,
+                        valorFinal,
+                        statusEntrega
+                    FROM ENTREGAS`        
 
 
             const result = await pool.request().query(sql);

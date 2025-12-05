@@ -164,9 +164,9 @@ const pedidoModels = {
         }
     },
 
-    //Atualiza o pedido pelo metodo PUT casso exista 
-    atualizarPedido: async (
+    atualizarPedido: async ( //Atualiza o pedido pelo metodo PUT casso exista 
         idPedido,
+        idEntrega,
         idCliente,
         dataPedido,
         tipoEntrega,
@@ -182,10 +182,15 @@ const pedidoModels = {
         valorFinal,
         statusEntrega
     ) => {
-        try {
-            const pool = await getConnection();
     
-            // Atualiza PEDIDOS
+        const pool = await getConnection(); // inicia a transcrição 
+        const transaction = new sql.Transaction(pool);
+    
+        await transaction.begin();
+    
+        try {
+    
+        
             const queryPedido = `
                 UPDATE PEDIDOS
                 SET
@@ -198,22 +203,22 @@ const pedidoModels = {
                     valorBaseKg = @valorBaseKg
                 WHERE idPedido = @idPedido;
             `;
-            await pool.request()
-            .input("idPedido", sql.UniqueIdentifier, idPedido)
-            .input("idCliente", sql.UniqueIdentifier, idCliente)
-            .input("dataPedido", sql.Date, dataPedido)
-            .input("tipoEntrega", sql.VarChar(7), tipoEntrega)
-            .input("distanciaKM", sql.Decimal(10, 2), distanciaKM)
-            .input("pesoCarga", sql.Decimal(10, 2), pesoCarga ?? pedidoAtual.pesoCarga)
-            .input("valorBaseKM", sql.Decimal(10, 2), valorBaseKM)
-            .input("valorBaseKg", sql.Decimal(10, 2), valorBaseKg)
-            .query(queryPedido); // Executa a query de atualização do pedido
     
-            // Atualiza ENTREGAS
+            await transaction.request()
+                .input("idPedido", sql.UniqueIdentifier, idPedido)
+                .input("idCliente", sql.UniqueIdentifier, idCliente)
+                .input("dataPedido", sql.Date, dataPedido)
+                .input("tipoEntrega", sql.VarChar(7), tipoEntrega)
+                .input("distanciaKM", sql.Decimal(10, 2), distanciaKM)
+                .input("pesoCarga", sql.Decimal(10, 2), pesoCarga)
+                .input("valorBaseKM", sql.Decimal(10, 2), valorBaseKM)
+                .input("valorBaseKg", sql.Decimal(10, 2), valorBaseKg)
+                .query(queryPedido); // Executa a query de atualização do pedido
+    
+    
+            
             const queryEntrega = `
                 UPDATE ENTREGAS
-                SET
-                   UPDATE ENTREGAS
                 SET
                     valorDistancia = @valorDistancia,
                     valorPeso = @valorPeso,
@@ -222,22 +227,33 @@ const pedidoModels = {
                     taxaEntrega = @taxaEntrega,
                     valorFinal = @valorFinal,
                     statusEntrega = @statusEntrega
-                WHERE idPedido = @idPedido;
+                WHERE idEntrega = @idEntrega;
             `;
-            await pool.request()
-            .input("idPedido", sql.UniqueIdentifier, idPedido)
-            .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
-            .input("valorPeso", sql.Decimal(10, 2), valorPeso)
-            .input("acreEntrega", sql.Decimal(10, 2), acreEntrega)
-            .input("descEntrega", sql.Decimal(10, 2), descEntrega)
-            .input("taxaEntrega", sql.Decimal(10, 2), taxaEntrega)
-            .input("valorFinal", sql.Decimal(10, 2), valorFinal)
-            .input("statusEntrega", sql.VarChar(11), statusEntrega)
-            .query(queryEntrega); // Executa a query de atualização da entrega
-
+    
+            await transaction.request()
+                .input("idEntrega", sql.UniqueIdentifier, idEntrega)
+                .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
+                .input("valorPeso", sql.Decimal(10, 2), valorPeso)
+                .input("acreEntrega", sql.Decimal(10, 2), acreEntrega)
+                .input("descEntrega", sql.Decimal(10, 2), descEntrega)
+                .input("taxaEntrega", sql.Decimal(10, 2), taxaEntrega)
+                .input("valorFinal", sql.Decimal(10, 2), valorFinal)
+                .input("statusEntrega", sql.VarChar(11), statusEntrega)
+                .query(queryEntrega);  // Executa a query de atualização da entrega
+    
+    
+            
+            await transaction.commit();
+    
+            return {
+                mensagem: "Pedido e entrega atualizados com sucesso",
+                idPedido, // retorna o id do pedido atualizado 
+                idEntrega // retorna o id da entrega atualizado 
+            };
     
         } catch (error) {
-            console.error("Erro ao atualizar pedido", error);
+            await transaction.rollback();
+            console.error("Erro ao atualizar pedido:", error);
             throw error;
         }
     },
@@ -247,10 +263,11 @@ const pedidoModels = {
 
         const pool = await getConnection();
         const transaction = new sql.Transaction(pool);
-        await transaction.begin();
+        await transaction.begin();  // Inicia transação
+
 
         try {
-
+             // Deleta a entrega
             let querySQL = `
                 SELECT idEntrega 
                 FROM ENTREGAS 
@@ -262,7 +279,7 @@ const pedidoModels = {
                 .query(querySQL);
 
             const idEntrega = resultadoEntrega.recordset[0].idEntrega;
-
+              
             querySQL = `
                 DELETE FROM ENTREGAS
                 WHERE idEntrega = @idEntrega
@@ -271,7 +288,7 @@ const pedidoModels = {
             await transaction.request()
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .query(querySQL);
-
+              // Deleta o pedido
             querySQL = `
                 DELETE FROM PEDIDOS
                 WHERE idPedido = @idPedido
@@ -281,10 +298,10 @@ const pedidoModels = {
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .query(querySQL);
 
-            await transaction.commit();
+            await transaction.commit(); // Confirma as exclusões
 
         } catch (error) {
-            await transaction.rollback();
+            await transaction.rollback(); // Reverte alterações em caso de erro
             console.error("Erro ao deletar Pedido:", error);
             throw error;
         }

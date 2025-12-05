@@ -6,10 +6,27 @@ const {pedidoModels} = require("../models/pedidoModels");
      * 
      * @async
      * @function listarCliente
+     *  @returns {Promise<void>} Retorna uma respostas JSON com A listar cliente.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao listar os clientes.
+
+
+     * @function criarCliente
+     *  @returns {Promise<void>} Retorna uma respostas JSON com (200) clientes criado.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao criar os clientes.
+
+  * @function deletarCliente
+     *  @returns {Promise<void>} Retorna uma respostas JSON com (201) clientes deletado.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao deletar os clientes && erro o cliente tem pedidos associados.
+
+
+  * @function atualizarCliente
+     *  @returns {Promise<void>} Retorna uma respostas JSON com (200) clientes atualizado.
+     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao atualizar os clientes.
+
+
      * @param {object} req -Objeto da requisição (recebido do cliente HTTP);
      * @param {object} res -Objeto da resposta (enviado ao cliente HTTP);
-     * @returns {Promise<void>} Retorna uma respostas JSON com A lista de pedidos.
-     * @throws Mostra no console e retorna o erro 500 se ocorrer falha ao buscar os clientes.
+    
      */
 
 
