@@ -22,6 +22,7 @@ buscarTodos: async () => {
             // Comando SQL para trazer todas as entrega
             let sql = `SELECT   
                         idEntrega,
+                        idPedido,
                         valorDistancia,
                         valorPeso,
                         acreEntrega,
@@ -65,7 +66,7 @@ buscarTodos: async () => {
             throw error;
         }
 
-    },
+    }
 
 }
 module.exports = {entregaModels} // Exporta o models

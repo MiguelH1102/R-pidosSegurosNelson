@@ -15,16 +15,21 @@ collection:
       sortKey: -1762875601699
       description: ""
     children:
-      - url: localhost:8081/clientes
+      - url: localhost:8081/clientes/
         name: Listar
         meta:
           id: req_535ac26e1b14462f9d5b00429991cccc
           created: 1762875607157
-          modified: 1762876786946
+          modified: 1764698308850
           isPrivate: false
           description: ""
           sortKey: -1762875607157
         method: GET
+        parameters:
+          - name: idCliente
+            value: BDAA2F40-06A3-4F34-BAA1-E7C9D0567E3F
+            description: ""
+            disabled: true
         headers:
           - name: User-Agent
             value: insomnia/12.0.0
@@ -41,7 +46,7 @@ collection:
         meta:
           id: req_2bb5ce480fc74ec1b0ca89ce9b672899
           created: 1762876734484
-          modified: 1764689748956
+          modified: 1764698281453
           isPrivate: false
           description: ""
           sortKey: -1762876734484
@@ -51,9 +56,9 @@ collection:
           text: |-
             {
             	"nomeCliente": "Teste",
-            	"cpfCliente": "1234681901",
+            	"cpfCliente": "1234681101",
             	"telefoneCliente": "52617281234",
-            	"emailCliente": "tadeu4@gmail.com",
+            	"emailCliente": "tad6u4@gmail.com",
             	"enderecoCliente": "SP, cidade Sumaré numero 570"
             }
         headers:
@@ -69,12 +74,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/clientes/11F43C9A-A001-4FC7-B448-B9B7703D9727
+      - url: localhost:8081/clientes/DC6A67A7-EC3A-4B46-8736-18ACE6541D2B
         name: Deletar
         meta:
           id: req_f1601be6433344f3b03c5732852e8dbb
           created: 1762884035021
-          modified: 1764689062954
+          modified: 1764698788539
           isPrivate: false
           description: ""
           sortKey: -1762884035021
@@ -95,12 +100,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/clientes/ABE65D91-2DA2-4DB9-8940-7208967D4E4E
+      - url: localhost:8081/clientes/8A8E9914-B5CC-4C46-815B-FD5627FEEDE2
         name: Atualizar
         meta:
           id: req_c741eefdddde46d2905762f250a9b802
           created: 1762887964879
-          modified: 1762888212733
+          modified: 1764698401247
           isPrivate: false
           description: ""
           sortKey: -1762887964879
@@ -109,9 +114,9 @@ collection:
           mimeType: application/json
           text: >-
             {
-            	"nomeCliente": "Dracula",
-            	"cpfCliente": "3446281946",
-            	"telefoneCliente": "65462816371356",
+            	"nomeCliente": "Isinha",
+            	"cpfCliente": "3446281746",
+            	"telefoneCliente": "654628163713",
             	"emailCliente": "meuirmão@gmail.com",
             	"enderecoCliente":"SP rua 07 bairro Jardim Maria Antonia, cidade Súmare"
 
@@ -145,7 +150,7 @@ collection:
         meta:
           id: req_fcaab1a3f9a2418b80f76ac1031d2308
           created: 1763463418260
-          modified: 1764690115715
+          modified: 1765283371181
           isPrivate: false
           description: ""
           sortKey: -1763463418260
@@ -154,13 +159,13 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"idCliente": "BDAA2F40-06A3-4F34-BAA1-E7C9D0567E3F",
-            	"dataPedido": "2025-12-27",
+            	"idCliente": "ABE65D91-2DA2-4DB9-8940-7208967D4E4E",
+            	"dataPedido": "2025-12-14",
             	"tipoEntrega": "normal",
-            	"distanciaKM": 100,
-            	"pesoCarga": 20,
-            	"valorBaseKM": 5.00,
-            	"valorBaseKg": 2.00
+            	"distanciaKM": 10,
+            	"pesoCarga": 10,
+            	"valorBaseKM": 10.00,
+            	"valorBaseKg": 10.00
             	
             	
             }
@@ -198,12 +203,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/pedidos/2652755D-B998-4416-A9A2-DCEFC79CD7C4
+      - url: localhost:8081/pedidos/8B6DCE87-D4C2-4F32-BE57-E4D58B6BDC8A
         name: Atualizar
         meta:
           id: req_19c1b74d140f4594b87adb077b02da5e
           created: 1763463862753
-          modified: 1764690423197
+          modified: 1765285874373
           isPrivate: false
           description: ""
           sortKey: -1763463862753
@@ -212,13 +217,11 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"idCliente": "BDAA2F40-06A3-4F34-BAA1-E7C9D0567E3F",
-            	"dataPedido": "2025-12-16T00:00:00.000Z",
-            		"tipoEntrega": "urgente",
-            		"distanciaKM": 150,
-            		"pesoCarga": 10,
-            		"valorBaseKM": 2.00,
-            		"valorBaseKg": 5.00
+            		
+            		"distanciaKM": 10,
+            		"pesoCarga": 20
+            	
+            	
             	
             }
         headers:
@@ -234,12 +237,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/pedidos/B83DEF2C-2601-45D6-9A5B-C7952B385F0E
+      - url: localhost:8081/pedidos/2652755D-B998-4416-A9A2-DCEFC79CD7C4
         name: Deletar
         meta:
           id: req_0d1154db3fbf4a10a7923d49d8116379
           created: 1763463879460
-          modified: 1764688624282
+          modified: 1764699390615
           isPrivate: false
           description: ""
           sortKey: -1763463879460
@@ -268,11 +271,16 @@ collection:
         meta:
           id: req_4efdd8267790421a87cfb016ee1fa515
           created: 1763487301182
-          modified: 1763488781297
+          modified: 1765283392060
           isPrivate: false
           description: ""
           sortKey: -1763487301182
         method: GET
+        parameters:
+          - name: idEntrega
+            value: 9812A76A-3365-4AEB-847F-BF1A6834CD71
+            description: ""
+            disabled: true
         headers:
           - name: User-Agent
             value: insomnia/12.0.0

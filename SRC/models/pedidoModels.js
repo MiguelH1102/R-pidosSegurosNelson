@@ -163,10 +163,9 @@ const pedidoModels = {
             throw error;
         }
     },
-
-    atualizarPedido: async ( //Atualiza o pedido pelo metodo PUT casso exista 
+    //Atualizar o Pedido e Atualizar a Entrega
+    atualizarPedido: async (
         idPedido,
-        idEntrega,
         idCliente,
         dataPedido,
         tipoEntrega,
@@ -183,14 +182,13 @@ const pedidoModels = {
         statusEntrega
     ) => {
     
-        const pool = await getConnection(); // inicia a transcrição 
+        const pool = await getConnection();
         const transaction = new sql.Transaction(pool);
     
         await transaction.begin();
     
         try {
-    
-        
+            // Atualiza a tabela PEDIDOS
             const queryPedido = `
                 UPDATE PEDIDOS
                 SET
@@ -213,10 +211,9 @@ const pedidoModels = {
                 .input("pesoCarga", sql.Decimal(10, 2), pesoCarga)
                 .input("valorBaseKM", sql.Decimal(10, 2), valorBaseKM)
                 .input("valorBaseKg", sql.Decimal(10, 2), valorBaseKg)
-                .query(queryPedido); // Executa a query de atualização do pedido
+                .query(queryPedido);
     
-    
-            
+            // Atualiza a tabela ENTREGAS usando idPedido como FK
             const queryEntrega = `
                 UPDATE ENTREGAS
                 SET
@@ -227,11 +224,11 @@ const pedidoModels = {
                     taxaEntrega = @taxaEntrega,
                     valorFinal = @valorFinal,
                     statusEntrega = @statusEntrega
-                WHERE idEntrega = @idEntrega;
+                WHERE idPedido = @idPedido;
             `;
     
             await transaction.request()
-                .input("idEntrega", sql.UniqueIdentifier, idEntrega)
+                .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
                 .input("valorPeso", sql.Decimal(10, 2), valorPeso)
                 .input("acreEntrega", sql.Decimal(10, 2), acreEntrega)
@@ -239,20 +236,16 @@ const pedidoModels = {
                 .input("taxaEntrega", sql.Decimal(10, 2), taxaEntrega)
                 .input("valorFinal", sql.Decimal(10, 2), valorFinal)
                 .input("statusEntrega", sql.VarChar(11), statusEntrega)
-                .query(queryEntrega);  // Executa a query de atualização da entrega
+                .query(queryEntrega);
     
-    
-            
-            await transaction.commit();
+            await transaction.commit();// Confirmar a Atualização
     
             return {
                 mensagem: "Pedido e entrega atualizados com sucesso",
-                idPedido, // retorna o id do pedido atualizado 
-                idEntrega // retorna o id da entrega atualizado 
             };
     
         } catch (error) {
-            await transaction.rollback();
+            await transaction.rollback(); // Reverte alterações em caso de erro
             console.error("Erro ao atualizar pedido:", error);
             throw error;
         }
