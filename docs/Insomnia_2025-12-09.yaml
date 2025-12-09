@@ -237,12 +237,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: localhost:8081/pedidos/2652755D-B998-4416-A9A2-DCEFC79CD7C4
+      - url: localhost:8081/pedidos/2A5F999E-51EA-473D-AB70-F79EF58E19F8
         name: Deletar
         meta:
           id: req_0d1154db3fbf4a10a7923d49d8116379
           created: 1763463879460
-          modified: 1764699390615
+          modified: 1765286509886
           isPrivate: false
           description: ""
           sortKey: -1763463879460
